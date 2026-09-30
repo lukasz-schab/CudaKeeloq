@@ -5,6 +5,9 @@ on:
       - test-windows*
       - release-v*
 
+permissions:
+  contents: read
+
 jobs:
   build:
 
@@ -17,6 +20,11 @@ jobs:
     permissions:
       contents: write
     steps:
+
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: audit
 
       - name: Setup CUDA (manual)
         env:
@@ -46,12 +54,12 @@ jobs:
           ${{env.CUDA_PATH}}\bin\nvcc.exe -V
 
       - name: Checkout
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
         with:
           submodules: 'true'
 
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.3.1
+        uses: microsoft/setup-msbuild@1ff57057b5cfdc39105cd07a01d78e9b0ea0c14c # v1.3.1
         with:
           # vs-version: latest
           msbuild-architecture: "x64"
@@ -68,6 +76,6 @@ jobs:
           Compress-Archive -Path artifacts/* -DestinationPath artifacts/cudakeeloq.zip
 
       - name: Create Release
-        uses: ncipollo/release-action@v1.12.0
+        uses: ncipollo/release-action@a2e71bdd4e7dab70ca26a852f29600c98b33153e # v1.12.0
         with:
           artifacts: artifacts/cudakeeloq.zip
