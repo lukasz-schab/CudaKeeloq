@@ -16,10 +16,11 @@ jobs:
       contents: read
 
     steps:
-      - name: Harden the runner (Audit all outbound calls)
+      - name: Harden the runner
         uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
-          egress-policy: audit
+          use-policy-store: true
+          api-key: ${{ secrets.STEP_SECURITY_API_KEY }}
 
       - id: actor
         uses: ASzc/change-string-case-action@07c1e24a97f0951e13f88870b99c058fcf0b14cf # v5
@@ -38,7 +39,7 @@ jobs:
         run: docker tag cudakeeloq:local ghcr.io/${{ steps.actor.outputs.lowercase }}/cudakeeloq:${{ github.ref_name }}
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2.2.0
+        uses: step-security/docker-login-action@8c7b695d8738c5699a679ff5254baf0f19f20a94 # v4.6.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
